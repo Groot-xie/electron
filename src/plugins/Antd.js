@@ -1,5 +1,19 @@
 import Vue from 'vue'
-import Antd from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.css';
+import {
+  Button,
+  Table,
+  message,
+  Input,
+  Checkbox,
+  Tag,
+  Icon
+} from 'ant-design-vue'
 
-Vue.use(Antd)
+Vue.prototype.$message = message
+
+Vue.use(Button)
+Vue.use(Table)
+Vue.use(Input)
+Vue.use(Checkbox)
+Vue.use(Tag)
+Vue.use(Icon)

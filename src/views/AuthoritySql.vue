@@ -241,6 +241,21 @@ export default {
       })
     },
     /**
+     * @description 校验数据
+     * @return { boolean } false: 通过 true: 不通过
+     */
+    checkData() {
+      const errorItem = this.data.find(item => !item.principalId || item.featuresMap.length <= 0)
+      if (errorItem) {
+        if (!errorItem.principalId) {
+          this.$message.error('接口-principalId不能为空')
+        } else if (errorItem.featuresMap.length <= 0) {
+          this.$message.error('功能点不能为空')
+        }
+      }
+      return !errorItem
+    },
+    /**
      * @description 导入sql脚本
      */
     importFile() {
@@ -281,6 +296,7 @@ export default {
      * @description 保存文件
      */
     saveFile() {
+      if (!this.checkData()) return
       const position = ipcRenderer.sendSync('dialog.showSaveDialogSync', {
         title: '保存sql文件',
         defaultPath: this.fileName ? this.fileName : `${Date.now()}.sql`,

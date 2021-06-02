@@ -1,95 +1,99 @@
 <template>
-  <div class="authority-sql">
-    <div class="authority-sql-tools">
+  <DefaultLayout>
+    <template #title>
       <a-button type="primary" icon="import" @click="importFile" style="margin-right: 12px;">导入</a-button>
       <a-button type="primary" icon="save" @click="saveFile">保存</a-button>
-    </div>
-    <a-table
-      :columns="columns"
-      :data-source="data"
-      bordered
-      :pagination="false"
-      rowKey="id"
-    >
-      <template slot="principalId" slot-scope="itemData, rowData, index">
-        <div v-if="principalIdEditArr.includes(rowData.id)">
-          <a-input
-            :ref="`principalId-${rowData.id}`"
-            v-model="rowData.principalId"
-            @keyup.enter="handleValueChange(rowData, 'principalId', 'principalIdEditArr')"
-            @blur="handleValueChange(rowData, 'principalId', 'principalIdEditArr')"
-          />
-        </div>
-        <span v-else>
-          <a-button type="link" icon="edit" @click="handlePrincipalIdState(rowData.id, 'principalId', 'principalIdEditArr')"></a-button>
-          {{ itemData }}
-        </span>
-      </template>
+    </template>
 
-
-      <template slot="isNew" slot-scope="itemData, rowData">
-        <a-checkbox v-model="rowData.isNew"></a-checkbox>
-      </template>
-
-      <template slot="desc" slot-scope="itemData, rowData, index">
-        <div v-if="rowData.isNew && descEditArr.includes(rowData.id)">
-          <a-input
-            :ref="`desc-${rowData.id}`"
-            v-model="rowData.desc"
-            @keyup.enter="handleValueChange(rowData, 'desc', 'descEditArr')"
-            @blur="handleValueChange(rowData, 'desc', 'descEditArr')"
-          />
-        </div>
-        <span v-else>
-          <a-button v-if="rowData.isNew" type="link" icon="edit" @click="handlePrincipalIdState(rowData.id, 'desc', 'descEditArr')"></a-button>
-          {{ itemData }}
-        </span>
-      </template>
-
-      <template slot="featuresMap" slot-scope="itemData, rowData, index">
-        <div v-for="(tag, tabIndex) in itemData" :key="tag">
-          <a-tag closable @close="() => handleCloseTag(rowData, tabIndex)">
-            {{ tag }}
-          </a-tag>
-        </div>
-        <template>
-          <a-input
-            v-if="featuresMapEditArr.includes(rowData.id)"
-            :ref="`featuresMap-${rowData.id}`"
-            type="text"
-            size="small"
-            :style="{ width: '300px' }"
-            :value="tagValue[rowData.id]"
-            @change="handleTagInputChange($event, rowData.id)"
-            @blur="handleTagInputConfirm(rowData)"
-            @keyup.enter="handleTagInputConfirm(rowData)"
-          />
-          <a-tag v-else style="background: #fff; borderStyle: dashed;" @click="showTagInput(rowData.id)">
-            <a-icon type="plus" />
-          </a-tag>
+    <div class="authority-sql">
+      <a-table
+        :columns="columns"
+        :data-source="data"
+        bordered
+        :pagination="false"
+        rowKey="id"
+      >
+        <template slot="principalId" slot-scope="itemData, rowData, index">
+          <div v-if="principalIdEditArr.includes(rowData.id)">
+            <a-input
+              :ref="`principalId-${rowData.id}`"
+              v-model="rowData.principalId"
+              @keyup.enter="handleValueChange(rowData, 'principalId', 'principalIdEditArr')"
+              @blur="handleValueChange(rowData, 'principalId', 'principalIdEditArr')"
+            />
+          </div>
+          <span v-else>
+            <a-button type="link" icon="edit" @click="handlePrincipalIdState(rowData.id, 'principalId', 'principalIdEditArr')"></a-button>
+            {{ itemData }}
+          </span>
         </template>
-      </template>
 
-       <template slot="action" slot-scope="itemData, rowData, index">
-         <a-button type="link" @click="remove(rowData.id)" icon="delete"></a-button>
-       </template>
 
-      <template slot="title" slot-scope="currentPageData">
-        <div class="table-title">
-          <a-button
-            type="link"
-            icon="plus"
-            size="small"
-            @click="addRow"
-          />
-        </div>
-      </template>
-    </a-table>
-  </div>
+        <template slot="isNew" slot-scope="itemData, rowData">
+          <a-checkbox v-model="rowData.isNew"></a-checkbox>
+        </template>
+
+        <template slot="desc" slot-scope="itemData, rowData, index">
+          <div v-if="rowData.isNew && descEditArr.includes(rowData.id)">
+            <a-input
+              :ref="`desc-${rowData.id}`"
+              v-model="rowData.desc"
+              @keyup.enter="handleValueChange(rowData, 'desc', 'descEditArr')"
+              @blur="handleValueChange(rowData, 'desc', 'descEditArr')"
+            />
+          </div>
+          <span v-else>
+            <a-button v-if="rowData.isNew" type="link" icon="edit" @click="handlePrincipalIdState(rowData.id, 'desc', 'descEditArr')"></a-button>
+            {{ itemData }}
+          </span>
+        </template>
+
+        <template slot="featuresMap" slot-scope="itemData, rowData, index">
+          <div v-for="(tag, tabIndex) in itemData" :key="tag">
+            <a-tag closable @close="() => handleCloseTag(rowData, tabIndex)">
+              {{ tag }}
+            </a-tag>
+          </div>
+          <template>
+            <a-input
+              v-if="featuresMapEditArr.includes(rowData.id)"
+              :ref="`featuresMap-${rowData.id}`"
+              type="text"
+              size="small"
+              :style="{ width: '300px' }"
+              :value="tagValue[rowData.id]"
+              @change="handleTagInputChange($event, rowData.id)"
+              @blur="handleTagInputConfirm(rowData)"
+              @keyup.enter="handleTagInputConfirm(rowData)"
+            />
+            <a-tag v-else style="background: #fff; borderStyle: dashed;" @click="showTagInput(rowData.id)">
+              <a-icon type="plus" />
+            </a-tag>
+          </template>
+        </template>
+
+        <template slot="action" slot-scope="itemData, rowData, index">
+          <a-button type="link" @click="remove(rowData.id)" icon="delete"></a-button>
+        </template>
+
+        <template slot="title" slot-scope="currentPageData">
+          <div class="table-title">
+            <a-button
+              type="link"
+              icon="plus"
+              size="small"
+              @click="addRow"
+            />
+          </div>
+        </template>
+      </a-table>
+    </div>
+  </DefaultLayout>
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
+import DefaultLayout from '@/components/DefaultLayout.vue'
 
 const fs = require('fs')
 
@@ -357,21 +361,15 @@ export default {
         })
       }
     }
+  },
+  components: {
+    DefaultLayout
   }
 }
 </script>
 
 <style scoped>
-  .authority-sql {
-    padding: 24px;
-  }
   .table-title {
     text-align: left;
-  }
-  .authority-sql-tools {
-    display: flex;
-    align-content: center;
-    justify-content: flex-end;
-    height: 40px;
   }
 </style>

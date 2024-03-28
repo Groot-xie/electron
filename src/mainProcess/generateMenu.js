@@ -95,6 +95,12 @@ const template = [
         }
       },
       {
+        label: '多语言脚本',
+        click: () => {
+          routerSend('GenerateLanguage')
+        }
+      },
+      {
         label: 'test',
         click: () => {
           routerSend('test')

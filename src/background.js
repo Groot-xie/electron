@@ -8,6 +8,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import './mainProcess/generateMenu'
 import './mainProcess/dialog'
 import './mainProcess/notification'
+import './mainProcess/connect-database'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 

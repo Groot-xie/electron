@@ -16,7 +16,8 @@ import { ipcRenderer } from 'electron'
 export default {
   data() {
     return {
-      value: ''
+      value: '',
+      done: true,
     }
   },
    
@@ -37,27 +38,26 @@ export default {
       }
     },
 
-    async connectDatabase(str) {
-      // 创建一个连接池
-      const pool = new Pool({
-        user: 'postgres',     // 替换为您的数据库用户名
-        host: '192.168.10.66',   // 替换为远程电脑的IP地址
-        database: 'corehr1114', // 替换为您的数据库名
-        password: '123456', // 替换为您的数据库密码
-        port: 5432,                // 默认的PostgreSQL端口
-        max: 10,                   // 连接池中的最大连接数
-        idleTimeoutMillis: 30000,  // 连接在被移除之前的空闲时间
-        connectionTimeoutMillis: 2000 // 连接超时时间
-      });
-
-      await this.generateLanguage(pool, str);
-
-      pool.end();
+    connectDatabase(str) {
+      // 发送请求到主进程
+        this.done = false;
+        ipcRenderer.send('connect-to-210-database', [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
+        // await this.generateLanguage(pool, str);
+        
+        // 接收主进程的响应
+        ipcRenderer.on('connect-to-210-database-response', (event, res) => {
+          if (this.done) return;
+          this.done = true
+          // 处理数据库响应
+          const str1 = this.deal_lb_base_language_detail_result(res[0])
+          const str2 = this.deal_query_lb_base_languag_row_result(res[1])
+          this.generateLanguage(str1, str2);
+        });
+        
+     
     },
 
-    async generateLanguage(pool, str) {
-      const str1 = await this.query_lb_base_language_detail(pool, str)
-      const str2 = await this.query_lb_base_languag_row(pool, str)
+    generateLanguage(str1, str2) {
       const template = `
           -- 生成多语言key
           begin;
@@ -201,7 +201,6 @@ export default {
           COMMIT;
 
       `
-      console.log(template)
       const position = ipcRenderer.sendSync('dialog.showSaveDialogSync', {
         title: '保存sql文件',
         defaultPath: this.fileName ? this.fileName : `${Date.now()}.sql`,
@@ -221,41 +220,21 @@ export default {
     /**
      * 查询 lb_base_language_detail 表
      */
-    query_lb_base_language_detail(pool, str) {
-      return new Promise((resolv, reject) => {
-        pool.query(`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, (err, res) => {
-         if (err) {
-           this.$message.error(`This is an error message: ${err.stack}`);
-         } else {
-           const rows = res.rows;
-           const result = `
-             INSERT INTO "public"."lb_base_language_detail" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "app", "hierarchy_code", "custom_type", "key") VALUES
-               ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-26 17:42:55.918283+08', '${item.app}', '${item.hierarchy_code}', '${item.custom_type}', '${item.key}')`).join(',\n')};
-           `
-           resolv(result)
-         }
-       });
-      })
+    deal_lb_base_language_detail_result(rows) {
+        const str = `
+          INSERT INTO "public"."lb_base_language_detail" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "app", "hierarchy_code", "custom_type", "key") VALUES
+            ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-26 17:42:55.918283+08', '${item.app}', '${item.hierarchy_code}', '${item.custom_type}', '${item.key}')`).join(',\n')};
+        `
+        return str
     },
 
-    query_lb_base_languag_row(pool, str) {
-
-      return new Promise((resolv, reject) => {
-        pool.query(`SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`, (err, res) => {
-          if (err) {
-            this.$message.error(`This is an error message: ${err.stack}`);
-          } else {
-            const rows = res.rows;
-            console.log(rows);
-            const result = `
-              INSERT INTO "public"."lb_base_languag_row" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "language", "default_translation", "customize_translation", "field_key") VALUES
-                ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-28 11:59:34.806111+08', '${item.language}', '${item.default_translation}', '${item.customize_translation}', '${item.field_key}')`).join(',\n')};
-            `
-            resolv(result)
-          }
-        })
-      })
-
+    deal_query_lb_base_languag_row_result(rows) {
+      
+      const str = `
+        INSERT INTO "public"."lb_base_languag_row" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "language", "default_translation", "customize_translation", "field_key") VALUES
+          ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-28 11:59:34.806111+08', '${item.language}', '${item.default_translation}', '${item.customize_translation}', '${item.field_key}')`).join(',\n')};
+      `
+      return str;
      },
 
   }

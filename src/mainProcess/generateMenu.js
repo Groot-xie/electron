@@ -89,13 +89,13 @@ const template = [
     label: '脚本',
     submenu: [
       {
-        label: 'hotfix-sql',
+        label: 'oodo 接口上线脚本',
         click: () => {
           routerSend('AuthoritySql')
         }
       },
       {
-        label: '多语言脚本',
+        label: 'java 多语言脚本',
         click: () => {
           routerSend('GenerateLanguage')
         }

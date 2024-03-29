@@ -1,19 +1,26 @@
 <template>
-  <div>
-    <h1>从210数据库捞取多语言脚本</h1>
-    <a-textarea  placeholder="输入要上线的多语言key，用换行分割" :rows="28" v-model="value" />
-    <a-button type="primary" @click="confirm" style="margin-top: 12px">
-      生成上线脚本
-    </a-button>
-  </div>
+  <DefaultLayout>
+    <template #title>
+      <a-button type="primary" @click="confirm" :loading="!done" style="margin-top: 12px">
+        生成多语言上线脚本
+      </a-button>
+    </template>
+    <div class="generate-language">
+      <a-textarea  placeholder="输入要上线的多语言key，用换行分割" :rows="28" v-model="value" />
+    </div>
+  </DefaultLayout>
 </template>
 
 <script>
-const { Pool } = require('pg');
-const fs = require('fs');
 import { ipcRenderer } from 'electron'
+import DefaultLayout from '@/components/DefaultLayout.vue'
+
+const fs = require('fs');
 
 export default {
+  components: {
+    DefaultLayout
+  },
   data() {
     return {
       value: '',
@@ -35,23 +42,33 @@ export default {
           }
         }
         this.connectDatabase(str)
+      } else {
+          this.$message.error('空')
       }
     },
 
     connectDatabase(str) {
       // 发送请求到主进程
         this.done = false;
-        ipcRenderer.send('connect-to-210-database', [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
-        // await this.generateLanguage(pool, str);
+        try {
+          ipcRenderer.send('connect-to-210-database', [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
+        } catch(e) {
+          this.$message.error(`出错：${e}`)
+          this.done = true;
+        }
         
         // 接收主进程的响应
         ipcRenderer.on('connect-to-210-database-response', (event, res) => {
+          // 处理数据库响应
           if (this.done) return;
           this.done = true
-          // 处理数据库响应
-          const str1 = this.deal_lb_base_language_detail_result(res[0])
-          const str2 = this.deal_query_lb_base_languag_row_result(res[1])
-          this.generateLanguage(str1, str2);
+          if (res[0] === 0 || res[1].length === 0) {
+            this.$message.error('未查询到任何数据！')
+          } else {
+            const str1 = this.deal_lb_base_language_detail_result(res[0])
+            const str2 = this.deal_query_lb_base_languag_row_result(res[1])
+            this.generateLanguage(str1, str2);
+          }
         });
         
      

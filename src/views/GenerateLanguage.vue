@@ -254,7 +254,7 @@ export default {
      */
     deal_lb_base_language_detail_result(rows) {
         const str = `
-          INSERT INTO "public"."lb_base_language_detail" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "app", "hierarchy_code", "custom_type", "key") VALUES
+          INSERT INTO "public"."a3_lb_base_language_detail" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "app", "hierarchy_code", "custom_type", "key") VALUES
             ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-26 17:42:55.918283+08', '${item.app}', '${item.hierarchy_code}', '${item.custom_type}', '${item.key}')`).join(',\n')};
         `
         return str
@@ -263,7 +263,7 @@ export default {
     deal_query_lb_base_languag_row_result(rows) {
       
       const str = `
-        INSERT INTO "public"."lb_base_languag_row" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "language", "default_translation", "customize_translation", "field_key") VALUES
+        INSERT INTO "public"."a3_lb_base_languag_row" ("id", "is_delete", "create_uid", "create_time", "update_uid", "update_time", "language", "default_translation", "customize_translation", "field_key") VALUES
           ${rows.map(item => `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-28 11:59:34.806111+08', '${item.language}', '${item.default_translation}', '${item.customize_translation}', '${item.field_key}')`).join(',\n')};
       `
       return str;

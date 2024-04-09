@@ -1,7 +1,21 @@
 <template>
-  <DefaultLayout>
+  <DefaultLayout title-justify-content="space-between">
     <template #title>
-      <a-button type="primary" @click="confirm" :loading="!done" style="margin-top: 12px">
+      <div>
+        source: 
+        <a-select v-model="source" style="width: 180px">
+          <a-select-option value="JAVA_210">
+            java 210
+          </a-select-option>
+          <a-select-option value="JAVA_DEMOCORE">
+            java democore
+          </a-select-option>
+          <a-select-option value="OODO_COREHR_TEST">
+            oodo corehr_2_test
+          </a-select-option>
+        </a-select>
+      </div>
+      <a-button type="primary" @click="confirm" :loading="!done">
         生成多语言上线脚本
       </a-button>
     </template>
@@ -23,6 +37,7 @@ export default {
   },
   data() {
     return {
+      source: 'JAVA_210',
       value: '',
       done: true,
     }
@@ -51,14 +66,14 @@ export default {
       // 发送请求到主进程
         this.done = false;
         try {
-          ipcRenderer.send('connect-to-210-database', [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
+          ipcRenderer.send('connect-to-language-database', this.source, [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
         } catch(e) {
           this.$message.error(`出错：${e}`)
           this.done = true;
         }
         
         // 接收主进程的响应
-        ipcRenderer.on('connect-to-210-database-response', (event, res) => {
+        ipcRenderer.on('connect-to-language-database-response', (event, res) => {
           // 处理数据库响应
           if (this.done) return;
           this.done = true

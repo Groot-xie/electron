@@ -1,6 +1,6 @@
 <template>
   <div class="default-layout">
-    <div class="layout-title">
+    <div class="layout-title" :style="`--justifyContent: ${titleJustifyContent}`">
       <slot name="title"></slot>
     </div>
 
@@ -12,7 +12,11 @@
 
 <script>
 export default {
-
+  props: {
+    titleJustifyContent: {
+      default: 'flex-end',
+    }
+  }
 }
 </script>
 
@@ -26,7 +30,7 @@ export default {
 .layout-title {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: var(--justifyContent);
   padding: 0 20px;
   height: 60px;
   background: #fff;

@@ -6,7 +6,8 @@ import {
   Input,
   Checkbox,
   Tag,
-  Icon
+  Icon,
+  Select,
 } from 'ant-design-vue'
 
 Vue.prototype.$message = message
@@ -17,3 +18,4 @@ Vue.use(Input)
 Vue.use(Checkbox)
 Vue.use(Tag)
 Vue.use(Icon)
+Vue.use(Select)

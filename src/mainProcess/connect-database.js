@@ -35,14 +35,40 @@ const DATABASE = {
   }
 }
 
+/**
+ * 多语言
+ */
 ipcMain.on('connect-to-language-database', async (event, source, querys = []) => {
-  const pool = new Pool(DATABASE[source]);
-  
-  const result = await Promise.all(querys.map(query => queryDatabase(pool, query)))
-  pool.end();
-  event.sender.send('connect-to-language-database-response', result);
+  let pool;
+  try {
+    pool = new Pool(DATABASE[source]);
+    const result = await Promise.all(querys.map(query => queryDatabase(pool, query)))
+    pool.end();
+    event.sender.send('connect-to-language-database-response', result);
+  } catch(e) {
+    pool && pool.end && pool.end();
+    event.sender.send('connect-to-language-database-response');
+  }
 });
 
+/**
+ * acl
+ */
+ipcMain.on('connect-to-acl-database', async (event, querys = [], beforeAction) => {
+  let pool;
+  try {
+    pool = new Pool(DATABASE['JAVA_210']);
+    if (beforeAction) {
+      await Promise.all([queryDatabase(pool, beforeAction)])
+    }
+    const result = await Promise.all(querys.map(query => queryDatabase(pool, query)))
+    pool.end();
+    event.sender.send('connect-to-acl-database-response', result);
+  } catch(e) {
+    pool && pool.end && pool.end();
+    event.sender.send('connect-to-acl-database-response');
+  }
+});
 
 function queryDatabase(pool, query) {
   return new Promise((resolve, reject) => {

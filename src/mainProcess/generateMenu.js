@@ -100,6 +100,12 @@ const template = [
           routerSend('GenerateLanguage')
         }
       },
+      // {
+      //   label: 'java 接口上线脚本',
+      //   click: () => {
+      //     routerSend('GenerateAcl')
+      //   }
+      // },
       {
         label: 'test',
         click: () => {

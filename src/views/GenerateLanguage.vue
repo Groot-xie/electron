@@ -65,19 +65,19 @@ export default {
     connectDatabase(str) {
       // 发送请求到主进程
         this.done = false;
-        try {
-          ipcRenderer.send('connect-to-language-database', this.source, [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
-        } catch(e) {
-          this.$message.error(`出错：${e}`)
-          this.done = true;
-        }
+
+        ipcRenderer.send('connect-to-language-database', this.source, [`SELECT * FROM lb_base_language_detail WHERE KEY in (${str});`, `SELECT * FROM lb_base_languag_row WHERE field_key in (${str});`]);
         
         // 接收主进程的响应
         ipcRenderer.on('connect-to-language-database-response', (event, res) => {
           // 处理数据库响应
           if (this.done) return;
           this.done = true
-          if (res[0] === 0 || res[1].length === 0) {
+          if (!res) {
+            this.$message.error('出错！！！')
+            return
+          }
+          if (res[0].length === 0 || res[1].length === 0) {
             this.$message.error('未查询到任何数据！')
           } else {
             const str1 = this.deal_lb_base_language_detail_result(res[0])

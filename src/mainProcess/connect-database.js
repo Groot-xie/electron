@@ -70,6 +70,22 @@ ipcMain.on('connect-to-acl-database', async (event, querys = [], beforeAction) =
   }
 });
 
+/**
+ * 目标项
+ */
+ipcMain.on('connect-to-TargetItem-database', async (event, source, querys = []) => {
+  let pool;
+  try {
+    pool = new Pool(DATABASE[source]);
+    const result = await Promise.all(querys.map(query => queryDatabase(pool, query)))
+    pool.end();
+    event.sender.send('connect-to-TargetItem-database-response', result);
+  } catch(e) {
+    pool && pool.end && pool.end();
+    event.sender.send('connect-to-TargetItem-database-response');
+  }
+});
+
 function queryDatabase(pool, query) {
   return new Promise((resolve, reject) => {
     pool.query(query, (err, res) => {

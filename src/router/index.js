@@ -4,6 +4,7 @@ import AuthoritySql from '../views/AuthoritySql.vue'
 import Test from '@/views/Test.vue'
 import GenerateLanguage from '@/views/GenerateLanguage.vue'
 import GenerateAcl from '@/views/GenerateAcl.vue'
+import TargetItem from '@/views/TargetItem.vue'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/generate-language',
     name: 'GenerateLanguage',
     component: GenerateLanguage
+  },
+  {
+    path: '/target-item',
+    name: 'TargetItem',
+    component: TargetItem
   },
   {
     path: '/generate-acl',

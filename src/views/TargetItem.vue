@@ -164,6 +164,8 @@ export default {
         if (this.bindValue.trim()) {
           const list = this.bindValue.trim().split(/\r\n|\n/).map(item => item.split(/\s+/)).filter(item => item[0] && item[1]);
           sql.push(`select * FROM uc_permission_mdf_relation WHERE ${list.map(item => `permission_code = '${item[0]}' AND goal_item_rule_define_code = '${item[1]}'`).join(' OR ')}`)
+        } else {
+          sql.push(`select * FROM uc_permission_mdf_relation WHERE permission_code = 'xxhxxhxxh' AND goal_item_rule_define_code = 'xxhxxhxxh'`)
         }
 
         ipcRenderer.send('connect-to-TargetItem-database', 'JAVA_210', sql);

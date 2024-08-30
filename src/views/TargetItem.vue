@@ -1,7 +1,7 @@
 <template>
   <DefaultLayout>
     <template #title>
-      <a-button type="primary" icon="save" @click="exportSql">生成sql</a-button>
+      <a-button type="primary" icon="save" :loading="!done" @click="exportSql">生成sql</a-button>
     </template>
 
     <div class="authority-sql">
@@ -13,8 +13,6 @@
         rowKey="id"
       >
         <template slot="title" slot-scope="currentPageData">
-              <!-- :loading="!done" -->
-
           <div class="table-title">
             目标项&属性
             <a-button
@@ -144,7 +142,7 @@ export default {
         const sql = [];
 
         // 目标项
-        const targetItems = this.data.map(item => `'${item.code}'`).join(',');
+        const targetItems = this.data.map(item => `'${item.code.trim()}'`).join(',');
         if (targetItems.length) {
           sql.push(`select * from uc_role_award_goal_item_rule_define where code in (${targetItems})`);
         } else {
@@ -152,7 +150,7 @@ export default {
         }
         // 目标项属性
         const childItems = this.data.reduce((result, next) => {
-          result.push(...next.childCodes.map(childCode => ({ code: next.code, childCode })));
+          result.push(...next.childCodes.map(childCode => ({ code: next.code.trim(), childCode: childCode.trim() })));
           return result
         }, [])
         if (childItems.length) {
@@ -162,12 +160,11 @@ export default {
         }
         // 功能点和目标项的绑定关系
         if (this.bindValue.trim()) {
-          const list = this.bindValue.trim().split(/\r\n|\n/).map(item => item.split(/\s+/)).filter(item => item[0] && item[1]);
-          sql.push(`select * FROM uc_permission_mdf_relation WHERE ${list.map(item => `permission_code = '${item[0]}' AND goal_item_rule_define_code = '${item[1]}'`).join(' OR ')}`)
+          const list = this.bindValue.trim().split(/\r\n|\n/).map(item => item.trim().split(/\s+/)).filter(item => item[0] && item[1]);
+          sql.push(`select * FROM uc_permission_mdf_relation WHERE ${list.map(item => `(permission_code = '${item[0]}' AND goal_item_rule_define_code = '${item[1]}')`).join(' OR ')}`)
         } else {
           sql.push(`select * FROM uc_permission_mdf_relation WHERE permission_code = 'xxhxxhxxh' AND goal_item_rule_define_code = 'xxhxxhxxh'`)
         }
-
         ipcRenderer.send('connect-to-TargetItem-database', 'JAVA_210', sql);
         
         // 接收主进程的响应
@@ -299,7 +296,6 @@ export default {
      */
     handleValueChange(rowData, field, editArrName) {
       if (!this[editArrName].includes(rowData.id)) return
-      console.log('chufa111')
       const value = rowData[field].trim()
       if (value) {
         const index = this[editArrName].findIndex(item => item === rowData.id)

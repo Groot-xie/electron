@@ -278,9 +278,9 @@ export default {
                   item.is_delete
                 }, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-28 11:59:34.806111+08', '${
                   item.language
-                }', '${item.default_translation}', '${this.nullToEmpty(
+                }', '${item.default_translation}', ${this.strOrEmptyStr(
                   item.customize_translation
-                )}', '${item.field_key}')`
+                )}, '${item.field_key}')`
             )
             .join(",\n")};
       `;

@@ -6,6 +6,12 @@ import './plugins/Antd'
 
 Vue.config.productionTip = false
 
+Object.defineProperties(Vue.prototype, {
+  nullToEmpty: {
+    value: (value) => value ? value : ''
+  }
+})
+
 export default new Vue({
   router,
   render: h => h(App)

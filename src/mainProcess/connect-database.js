@@ -4,10 +4,10 @@ const { Pool } = require('pg');
 
 const DATABASE = {
   JAVA_210: {
-    user: 'postgres',
+    user: 'corehr',
     host: '192.168.10.66',
     database: 'corehr1114',
-    password: '123456',
+    password: 'ch1qazXDR66',
     port: 5432,
     max: 10,                   // 连接池中的最大连接数
     idleTimeoutMillis: 30000,  // 连接在被移除之前的空闲时间

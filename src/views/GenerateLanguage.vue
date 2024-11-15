@@ -286,8 +286,8 @@ export default {
                   item.language
                 }', '${this.dealQuotationMark(
                   item.default_translation
-                )}', ${this.dealQuotationMark(
-                  this.strOrEmptyStr(item.customize_translation)
+                )}', ${this.strOrEmptyStr(
+                  this.dealQuotationMark(item.customize_translation)
                 )}, '${item.field_key}')`
             )
             .join(",\n")};
@@ -299,6 +299,7 @@ export default {
      */
     dealQuotationMark(value) {
       if (typeof value === "string" && value.includes("'")) {
+        console.log("111", value);
         return value.replace(/(?<!')'(?!')/g, "''");
       } else {
         return value;

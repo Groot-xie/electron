@@ -261,7 +261,13 @@ export default {
             ${rows
               .map(
                 (item) =>
-                  `(${item.id}, ${item.is_delete}, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-26 17:42:55.918283+08', '${item.app}', '${item.hierarchy_code}', '${item.custom_type}', '${item.key}')`
+                  `(${item.id}, ${
+                    item.is_delete
+                  }, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-26 17:42:55.918283+08', '${
+                    item.app
+                  }', '${item.hierarchy_code}', ${this.strOrEmptyStr(
+                    item.custom_type
+                  )}, '${item.key}')`
               )
               .join(",\n")};
         `;
@@ -278,13 +284,25 @@ export default {
                   item.is_delete
                 }, NULL, '2024-03-26 17:42:55.918283+08', NULL, '2024-03-28 11:59:34.806111+08', '${
                   item.language
-                }', '${item.default_translation}', ${this.strOrEmptyStr(
-                  item.customize_translation
+                }', '${this.dealQuotationMark(
+                  item.default_translation
+                )}', ${this.dealQuotationMark(
+                  this.strOrEmptyStr(item.customize_translation)
                 )}, '${item.field_key}')`
             )
             .join(",\n")};
       `;
       return str;
+    },
+    /**
+     * 处理引号
+     */
+    dealQuotationMark(value) {
+      if (typeof value === "string" && value.includes("'")) {
+        return value.replace(/(?<!')'(?!')/g, "''");
+      } else {
+        return value;
+      }
     },
   },
 };

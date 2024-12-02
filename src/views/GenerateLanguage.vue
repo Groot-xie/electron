@@ -286,9 +286,7 @@ export default {
                   item.language
                 }', '${this.dealQuotationMark(
                   item.default_translation
-                )}', ${this.strOrEmptyStr(
-                  this.dealQuotationMark(item.customize_translation)
-                )}, '${item.field_key}')`
+                )}', NULL, '${item.field_key}')`
             )
             .join(",\n")};
       `;
